@@ -82,7 +82,7 @@ export function SmartUploadForm() {
                 brand: specs.brand,
                 model: specs.model,
                 condition: specs.condition,
-                description: `Selling my ${specs.condition.replace('_', ' ')} ${specs.brand} ${specs.model}. ${valuation.reasoning}`,
+                description: `Selling my ${(specs.condition || '').replace('_', ' ')} ${specs.brand} ${specs.model}. ${valuation.reasoning}`,
                 value: valuation.estimatedValue
             }));
 
