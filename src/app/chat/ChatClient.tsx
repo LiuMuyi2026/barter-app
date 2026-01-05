@@ -62,7 +62,7 @@ export default function ChatClient({
 
                 // Add any from 'prev' that aren't in history (e.g. optimistic or new real-time)
                 // We check if ID exists in history.
-                const historyIds = new Set(history.map(h => h.id));
+                const historyIds = new Set(history.map((h: Message) => h.id));
 
                 // Only keep prev messages if they are NOT in history (avoid duplication)
                 // AND they are possibly newer (or optimistic).
