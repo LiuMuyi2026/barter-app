@@ -57,7 +57,7 @@ export default async function SearchPage(
                     </div>
                 )}
 
-                {results.map(item => (
+                {results.map((item: any) => (
                     <Link href={`/community/item/${item.id}`} key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm">
                         <div className="aspect-[4/5] relative">
                             <Image
