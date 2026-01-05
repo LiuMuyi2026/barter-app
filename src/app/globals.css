@@ -1,22 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* Neo-Barter Premium Dark Theme */
-  --background: #030712; /* Deepest Slate */
+  --background: #030712;
+  /* Deepest Slate */
   --foreground: #f8fafc;
-  
-  --primary: #8b5cf6; /* Violet Neon */
+
+  --primary: #8b5cf6;
+  /* Violet Neon */
   --primary-glow: rgba(139, 92, 246, 0.5);
-  
+
   --secondary: #1e293b;
   --secondary-foreground: #e2e8f0;
-  
-  --accent: #ec4899; /* Pink Neon */
+
+  --accent: #ec4899;
+  /* Pink Neon */
   --accent-glow: rgba(236, 72, 153, 0.5);
-  
+
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.03);
-  
+
   --radius: 1.5rem;
-  --font-sans: 'outfit', system-ui, sans-serif; /* Mocking a premium font */
+  --font-sans: 'outfit', system-ui, sans-serif;
+  /* Mocking a premium font */
 }
 
 * {
@@ -31,25 +39,27 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   /* Mesh Gradient Background */
-  background-image: 
+  background-image:
     radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
     radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
 }
 
 /* Glassmorphism Utilities */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
 
-.glass-card {
-  @extend .glass;
-  border-radius: 1.5rem;
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  .glass-card {
+    @apply glass;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 }
 
 .glass-card:active {
@@ -64,7 +74,7 @@ body {
   border-radius: 9999px;
   font-weight: bold;
   box-shadow: 0 0 15px var(--primary-glow);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s;
 }
 
@@ -74,24 +84,35 @@ body {
 }
 
 /* Typography */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   letter-spacing: -0.02em;
 }
 
 /* Scrollbar Hide */
 .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
+
 .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Animations */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .animate-float {
