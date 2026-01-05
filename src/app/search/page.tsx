@@ -11,12 +11,21 @@ export default async function SearchPage(
     }
 ) {
     const searchParams = await props.searchParams;
-    const q = Array.isArray(searchParams.q) ? searchParams.q[0] : (searchParams.q || '');
-    const category = Array.isArray(searchParams.category) ? searchParams.category[0] : (searchParams.category || '');
-    const min = Number(Array.isArray(searchParams.min) ? searchParams.min[0] : searchParams.min) || 0;
-    const max = Number(Array.isArray(searchParams.max) ? searchParams.max[0] : searchParams.max) || 10000;
 
-    const results = await searchItems(q, category, min, max) || [];
+    // Extreme safety check for searchParams
+    const qRaw = searchParams?.q;
+    const q = (Array.isArray(qRaw) ? String(qRaw[0] || '') : String(qRaw || '')).trim();
+
+    const catRaw = searchParams?.category;
+    const category = (Array.isArray(catRaw) ? String(catRaw[0] || '') : String(catRaw || '')).trim();
+
+    const minRaw = searchParams?.min;
+    const min = Number(Array.isArray(minRaw) ? minRaw[0] : minRaw) || 0;
+
+    const maxRaw = searchParams?.max;
+    const max = Number(Array.isArray(maxRaw) ? maxRaw[0] : maxRaw) || 10000;
+
+    const results = (await searchItems(q, category, min, max)) || [];
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">

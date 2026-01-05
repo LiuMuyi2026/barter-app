@@ -108,19 +108,21 @@ export async function getFeed() {
 }
 
 export async function searchItems(query: any, category: any, minPrice: number, maxPrice: number) {
-    const q = typeof query === 'string' ? query : '';
-    const cat = typeof category === 'string' ? category : '';
+    const q = String(query || '').trim();
+    const cat = String(category || '').trim();
+
+    if (!prisma) return [];
 
     const where: any = {};
-    if (query) {
+    if (q) {
         where.OR = [
-            { title: { contains: query } },
-            { description: { contains: query } },
-            { brand: { contains: query } }
+            { title: { contains: q } },
+            { description: { contains: q } },
+            { brand: { contains: q } }
         ];
     }
-    if (category) where.category = category;
-    if (maxPrice > 0) where.value = { gte: minPrice, lte: maxPrice };
+    if (cat) where.category = cat;
+    if (maxPrice > 0) where.value = { gte: minPrice || 0, lte: maxPrice };
 
     return await prisma.item.findMany({
         where,
