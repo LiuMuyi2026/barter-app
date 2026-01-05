@@ -11,12 +11,12 @@ export default async function SearchPage(
     }
 ) {
     const searchParams = await props.searchParams;
-    const q = searchParams.q || '';
-    const category = searchParams.category || '';
-    const min = Number(searchParams.min) || 0;
-    const max = Number(searchParams.max) || 10000;
+    const q = Array.isArray(searchParams.q) ? searchParams.q[0] : (searchParams.q || '');
+    const category = Array.isArray(searchParams.category) ? searchParams.category[0] : (searchParams.category || '');
+    const min = Number(Array.isArray(searchParams.min) ? searchParams.min[0] : searchParams.min) || 0;
+    const max = Number(Array.isArray(searchParams.max) ? searchParams.max[0] : searchParams.max) || 10000;
 
-    const results = await searchItems(q, category, min, max);
+    const results = await searchItems(q, category, min, max) || [];
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
@@ -72,8 +72,8 @@ export default async function SearchPage(
                             </div>
                         </div>
                         <div className="p-3">
-                            <h3 className="font-bold text-sm truncate">{item.title}</h3>
-                            <p className="text-xs text-gray-500">{item.brand}</p>
+                            <h3 className="font-bold text-sm truncate">{item.title || 'Untitled'}</h3>
+                            <p className="text-xs text-gray-500">{item.brand || 'No Brand'}</p>
                         </div>
                     </Link>
                 ))}

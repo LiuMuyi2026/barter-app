@@ -107,7 +107,10 @@ export async function getFeed() {
     return items;
 }
 
-export async function searchItems(query: string, category: string, minPrice: number, maxPrice: number) {
+export async function searchItems(query: any, category: any, minPrice: number, maxPrice: number) {
+    const q = typeof query === 'string' ? query : '';
+    const cat = typeof category === 'string' ? category : '';
+
     const where: any = {};
     if (query) {
         where.OR = [

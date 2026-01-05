@@ -4,8 +4,8 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import Database from 'better-sqlite3'
 
 const prismaClientSingleton = () => {
-    const databaseUrl = process.env.DATABASE_URL ?? 'file:./dev.db'
-    const dbPath = databaseUrl.replace(/^file:/, '')
+    const databaseUrl = process.env.DATABASE_URL || 'file:./dev.db'
+    const dbPath = (databaseUrl || '').replace(/^file:/, '')
 
     const connection = new Database(dbPath)
     // @ts-ignore
