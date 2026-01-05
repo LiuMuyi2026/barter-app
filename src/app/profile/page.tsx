@@ -57,7 +57,7 @@ export default async function ProfilePage() {
                             {user.name}
                             <StreakBadge />
                         </h1>
-                        <p className="text-violet-300 font-medium">@{user.name?.toLowerCase().replace(/\s/g, '')}</p>
+                        <p className="text-violet-300 font-medium">@{(user.name || 'user').toLowerCase().replace(/\s/g, '')}</p>
 
                         {user.bio && <p className="text-gray-400 text-sm mt-3">{user.bio}</p>}
 
