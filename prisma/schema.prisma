@@ -1,0 +1,283 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  avatar        String?
+  bio           String?
+  bannerUrl     String?
+  role          Role      @default(USER)
+  
+  // Localization & Settings
+  language      Language  @default(EN)
+  settings      String?   // JSON string for preferences (Privacy, Notifications, etc.)
+  
+  // Identity & KYC
+  kycStatus     KycStatus @default(NONE)
+  isVerified    Boolean   @default(false)
+  
+  // Relations
+  items         Item[]
+  savedItems    SavedItem[]
+  notifications Notification[]
+  likes         Like[]
+  messages      Message[]
+  communities   CommunityMember[]
+  comments      Comment[]
+  posts         Post[]
+  
+  // Gamification
+  lastActive    DateTime  @default(now())
+  streakCount   Int       @default(0)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  reportsMade   Report[]      @relation("ReportedBy")
+  blockedUsers  Block[]       @relation("BlockedBy")
+  blockedBy     Block[]       @relation("BlockedUser")
+}
+
+model Item {
+  id              String       @id @default(cuid())
+  
+  // Basic Info
+  title           String
+  description     String
+  
+  // Structural Attributes
+  category        String?
+  brand           String?
+  model           String?
+  condition       Condition    @default(USED_GOOD)
+  
+  // Media & Assets
+  imageUrl        String       // Cover Image
+  images          ItemImage[]  // Multi-image Carousel
+  media           String?      // JSON string: additional images, videos
+  
+  // Valuation & Pricing
+  value           Float        // User set price
+  originalPrice   Float?
+  
+  // AVS Data (AI Valuation System)
+  avsEstimatedValue Float?
+  avsConfidence     Float?
+  avsInfo           String?    // JSON: defects, reasoning, price_range
+  
+  // Logistics
+  shippingInfo    String?      // JSON: method, cost, location
+  
+  // Relations
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  savedBy         SavedItem[]
+  likes           Like[]       @relation("ItemLikes")
+  matches1        Match[]      @relation("MatchItem1")
+  matches2        Match[]      @relation("MatchItem2")
+  
+  communityId     String?
+  community       Community?   @relation(fields: [communityId], references: [id])
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Community {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  description String?
+  icon        String?
+  
+  members     CommunityMember[]
+  items       Item[]
+  posts       Post[]
+  
+  createdAt   DateTime          @default(now())
+}
+
+model CommunityMember {
+  id          String    @id @default(cuid())
+  userId      String
+  communityId String
+  role        Role      @default(USER)
+  
+  user        User      @relation(fields: [userId], references: [id])
+  community   Community @relation(fields: [communityId], references: [id])
+  
+  joinedAt    DateTime  @default(now())
+
+  @@unique([userId, communityId])
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String?
+  content     String
+  type        PostType  @default(SHOWCASE) // Showcase, LegitCheck, etc.
+  media       String?   // JSON
+  
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+  comments    Comment[]
+
+  createdAt   DateTime  @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  
+  upvotes   Int      @default(0)
+
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id         String   @id @default(cuid())
+  fromUserId String
+  fromUser   User     @relation(fields: [fromUserId], references: [id])
+  fromItemId String?
+  
+  toItemId   String
+  toItem     Item     @relation("ItemLikes", fields: [toItemId], references: [id])
+  isLike     Boolean
+  createdAt  DateTime @default(now())
+}
+
+model Match {
+  id        String    @id @default(cuid())
+  item1Id   String
+  item1     Item      @relation("MatchItem1", fields: [item1Id], references: [id])
+  item2Id   String
+  item2     Item      @relation("MatchItem2", fields: [item2Id], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id])
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model ItemImage {
+  id        String   @id @default(cuid())
+  url       String
+  order     Int      @default(0)
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  data      String?          // JSON for links or metadata
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+model SavedItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, itemId])
+}
+
+// Enums
+enum NotificationType {
+  LIKE
+  MATCH
+  SYSTEM
+  COMMENT
+}
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum Language {
+  EN
+  ZH
+  JA
+  ES
+  FR
+  DE
+}
+
+enum Condition {
+  BRAND_NEW
+  LIKE_NEW
+  USED_GOOD
+  USED_FAIR
+}
+
+enum PostType {
+  SHOWCASE
+  LEGIT_CHECK
+  DISCUSSION
+  WTB_SWAP
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  reporterId String
+  reporter  User     @relation("ReportedBy", fields: [reporterId], references: [id])
+  targetId  String?  // User ID being reported
+  itemId    String?  // Item ID being reported
+  postId    String?  // Post ID
+  reason    String
+  status    String   @default("PENDING") // PENDING, RESOLVED, DISMISSED
+  createdAt DateTime @default(now())
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String
+  blocker   User     @relation("BlockedBy", fields: [blockerId], references: [id])
+  blockedId String
+  blocked   User     @relation("BlockedUser", fields: [blockedId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+}
